@@ -1,7 +1,7 @@
 const STORAGE_KEY = "security-monitor-v1";
 const servicesPage = document.getElementById("serviceList");
 const formPage = document.getElementById("serviceForm");
-const summaryPage = document.getElementById("categoryStats");
+const summaryPage = document.getElementById("stackedBar") || document.getElementById("categoryBars") || document.getElementById("categoryStats");
 
 let services = loadServices();
 
@@ -92,16 +92,16 @@ function updateStats() {
   }
 }
 
-function renderTable() {
-  const tbody = document.getElementById("serviceList");
+function renderCards() {
+  const grid = document.getElementById("serviceList");
   const emptyState = document.getElementById("emptyState");
   const searchInput = document.getElementById("searchInput");
   const statusFilter = document.getElementById("statusFilter");
   const securityLevelFilter = document.getElementById("securityLevelFilter");
 
-  if (!tbody || !emptyState) return;
+  if (!grid || !emptyState) return;
 
-  tbody.innerHTML = "";
+  grid.innerHTML = "";
 
   const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
   const status = statusFilter ? statusFilter.value : "Все";
@@ -129,37 +129,95 @@ function renderTable() {
     emptyState.style.display = "none";
   }
 
-  filtered.forEach((service) => {
-    const tr = document.createElement("tr");
+  const circumference = 2 * Math.PI * 22; // r=22
 
-    const level = getSecurityLevel(Number(service.securityLevel));
+  filtered.forEach((service) => {
+    const card = document.createElement("div");
+    card.className = "flip-card";
+    card.dataset.id = service.id;
+
+    const offset = circumference - (service.securityLevel / 100) * circumference;
     const barClass = getSecurityClass(Number(service.securityLevel));
 
-    tr.innerHTML = `
-      <td class="td-name">${escapeHtml(service.title)}</td>
-      <td class="td-url">${escapeHtml(service.url)}</td>
-      <td>${escapeHtml(service.category)}</td>
-      <td>
-        <div class="security-bar-cell">
-          <div class="security-bar-track">
-            <div class="security-bar-fill ${barClass}" style="width: ${service.securityLevel}%;"></div>
+    card.innerHTML = `
+      <div class="flip-card-inner">
+        <!-- FRONT -->
+        <div class="flip-card-front">
+          <div class="card-front-top">
+            <div>
+              <h3 class="card-front-name">${escapeHtml(service.title)}</h3>
+              <p class="card-front-category">${escapeHtml(service.category)}</p>
+            </div>
+            <div class="card-progress">
+              <svg viewBox="0 0 48 48">
+                <circle class="progress-bg" cx="24" cy="24" r="22" />
+                <circle class="progress-fill ${barClass}" cx="24" cy="24" r="22"
+                  stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" />
+              </svg>
+              <span class="progress-text">${service.securityLevel}%</span>
+            </div>
           </div>
-          <span class="security-bar-pct">${service.securityLevel}%</span>
+          <div class="card-front-middle">
+            <span class="status-badge" data-value="${escapeHtml(service.status)}">${escapeHtml(service.status)}</span>
+          </div>
+          <p class="card-front-hint">Нажми, чтобы увидеть подробности</p>
         </div>
-      </td>
-      <td><span class="status-badge" data-value="${escapeHtml(service.status)}">${escapeHtml(service.status)}</span></td>
-      <td>
-        <button class="action-btn edit" data-id="${escapeHtml(service.id)}">Редактировать</button>
-        <button class="action-btn delete" data-id="${escapeHtml(service.id)}">Удалить</button>
-      </td>
+        <!-- BACK -->
+        <div class="flip-card-back">
+          <div>
+            <h3>${escapeHtml(service.title)}</h3>
+            <div class="card-back-row">
+              <span class="card-back-label">URL</span>
+              <span class="card-back-value">${escapeHtml(service.url)}</span>
+            </div>
+            <div class="card-back-row">
+              <span class="card-back-label">Категория</span>
+              <span class="card-back-value">${escapeHtml(service.category)}</span>
+            </div>
+            <div class="card-back-row">
+              <span class="card-back-label">Безопасность</span>
+              <span class="card-back-value">${service.securityLevel}%</span>
+            </div>
+            <div class="card-back-row">
+              <span class="card-back-label">Статус</span>
+              <span class="card-back-value">${escapeHtml(service.status)}</span>
+            </div>
+            <div class="card-back-row">
+              <span class="card-back-label">Ответственный</span>
+              <span class="card-back-value">${escapeHtml(service.assignee || "не назначен")}</span>
+            </div>
+            <div class="card-back-row">
+              <span class="card-back-label">Проверка</span>
+              <span class="card-back-value">${escapeHtml(service.lastCheckDate || "не указана")}</span>
+            </div>
+            ${service.description ? `<div class="card-back-row"><span class="card-back-label">Описание</span><span class="card-back-value">${escapeHtml(service.description)}</span></div>` : ""}
+          </div>
+          <div class="card-back-actions">
+            <button class="action-btn edit" data-id="${escapeHtml(service.id)}">Редактировать</button>
+            <button class="action-btn delete" data-id="${escapeHtml(service.id)}">Удалить</button>
+          </div>
+        </div>
+      </div>
     `;
 
-    tr.querySelector(".edit").addEventListener("click", () => {
+    // Flip on click (both sides)
+    card.querySelector(".flip-card-front").addEventListener("click", () => {
+      card.classList.toggle("flipped");
+    });
+    card.querySelector(".flip-card-back").addEventListener("click", () => {
+      card.classList.remove("flipped");
+    });
+
+    card.querySelector(".edit").addEventListener("click", (e) => {
+      e.stopPropagation();
       window.location.href = `create.html?edit=${encodeURIComponent(service.id)}`;
     });
-    tr.querySelector(".delete").addEventListener("click", () => removeService(service.id));
+    card.querySelector(".delete").addEventListener("click", (e) => {
+      e.stopPropagation();
+      removeService(service.id);
+    });
 
-    tbody.appendChild(tr);
+    grid.appendChild(card);
   });
 
   updateStats();
@@ -225,14 +283,43 @@ function fillFormForEdit(id) {
   document.title = "Редактирование сервиса";
 }
 
+// ===== MODAL =====
+function showModal(title, message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("confirmModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalMessage = document.getElementById("modalMessage");
+    const confirmBtn = document.getElementById("modalConfirmBtn");
+    const cancelBtn = document.getElementById("modalCancelBtn");
+    if (!modal) { resolve(false); return; }
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    modal.classList.add("visible");
+
+    const close = (result) => {
+      modal.classList.remove("visible");
+      confirmBtn.removeEventListener("click", onConfirm);
+      cancelBtn.removeEventListener("click", onCancel);
+      resolve(result);
+    };
+
+    const onConfirm = () => close(true);
+    const onCancel = () => close(false);
+
+    confirmBtn.addEventListener("click", onConfirm);
+    cancelBtn.addEventListener("click", onCancel);
+  });
+}
+
 function removeService(id) {
   const service = services.find((item) => item.id === id);
   if (!service) return;
-  const confirmed = window.confirm(`Удалить сервис "${service.title}"?`);
-  if (!confirmed) return;
-  services = services.filter((item) => item.id !== id);
-  saveServices();
-  renderTable();
+  showModal("Удалить сервис?", `Удалить "${service.title}"? Это действие нельзя отменить.`).then((confirmed) => {
+    if (!confirmed) return;
+    services = services.filter((item) => item.id !== id);
+    saveServices();
+    renderCards();
+  });
 }
 
 function validateService(values) {
@@ -272,7 +359,7 @@ function importFromJson(file) {
     try {
       const parsed = JSON.parse(String(event.target?.result || "[]"));
       if (!Array.isArray(parsed)) {
-        window.alert("Некорректный формат файла: ожидается массив сервисов.");
+        console.warn("Некорректный формат файла: ожидается массив сервисов.");
         return;
       }
       const normalized = parsed.map((item) => ({
@@ -294,10 +381,9 @@ function importFromJson(file) {
       validImported.forEach((item) => { if (item?.id) mergedById.set(item.id, item); });
       services = Array.from(mergedById.values());
       saveServices();
-      renderTable();
+      renderCards();
     } catch (error) {
       console.error(error);
-      window.alert("Не удалось прочитать JSON. Проверьте содержимое файла.");
     }
   };
   reader.readAsText(file);
@@ -312,18 +398,22 @@ function initServicesPage() {
   const securityLevelFilter = document.getElementById("securityLevelFilter");
   const resetFiltersBtn = document.getElementById("resetFiltersBtn");
 
-  clearAllBtn?.addEventListener("click", () => {
+  clearAllBtn?.addEventListener("click", async () => {
     if (!services.length) return;
-    if (!window.confirm("Удалить все сервисы? Это действие нельзя отменить.")) return;
+    const confirmed = await showModal("Удалить все?", "Удалить все сервисы? Это действие нельзя отменить.");
+    if (!confirmed) return;
     services = [];
     saveServices();
-    renderTable();
+    renderCards();
   });
 
   exportBtn?.addEventListener("click", exportToJson);
   importInput?.addEventListener("change", (event) => {
     const file = event.target.files?.[0];
-    if (file) importFromJson(file);
+    if (file) {
+      console.log("Импорт файла:", file.name);
+      importFromJson(file);
+    }
     importInput.value = "";
   });
 
@@ -331,15 +421,15 @@ function initServicesPage() {
     if (searchInput) searchInput.value = "";
     if (statusFilter) statusFilter.value = "Все";
     if (securityLevelFilter) securityLevelFilter.value = "Все";
-    renderTable();
+    renderCards();
   });
 
   [searchInput, statusFilter, securityLevelFilter].forEach((el) => {
-    el?.addEventListener("input", renderTable);
-    el?.addEventListener("change", renderTable);
+    el?.addEventListener("input", renderCards);
+    el?.addEventListener("change", renderCards);
   });
 
-  renderTable();
+  renderCards();
 }
 
 function initFormPage() {
@@ -365,55 +455,154 @@ function initFormPage() {
 }
 
 function initSummaryPage() {
-  updateStats();
+  const total = services.length;
+  const protected_ = services.filter((s) => s.securityLevel > 80).length;
+  const risky = services.filter((s) => s.securityLevel >= 50 && s.securityLevel <= 80).length;
+  const critical = services.filter((s) => s.securityLevel < 50).length;
+  const avg = total > 0 ? Math.round(services.reduce((sum, s) => sum + Number(s.securityLevel || 0), 0) / total) : 0;
 
-  const categoryStats = document.getElementById("categoryStats");
+  // Stacked bar
+  const segGreen = document.getElementById("segGreen");
+  const segYellow = document.getElementById("segYellow");
+  const segRed = document.getElementById("segRed");
+  if (segGreen) segGreen.style.width = total ? `${(protected_ / total) * 100}%` : "0%";
+  if (segYellow) segYellow.style.width = total ? `${(risky / total) * 100}%` : "0%";
+  if (segRed) segRed.style.width = total ? `${(critical / total) * 100}%` : "0%";
+
+  // Legend counts
+  const legTotal = document.getElementById("legTotal");
+  const legProtected = document.getElementById("legProtected");
+  const legRisky = document.getElementById("legRisky");
+  const legCritical = document.getElementById("legCritical");
+  if (legTotal) legTotal.textContent = total;
+  if (legProtected) legProtected.textContent = protected_;
+  if (legRisky) legRisky.textContent = risky;
+  if (legCritical) legCritical.textContent = critical;
+
+  // Average
+  const avgSecurityEl = document.getElementById("avgSecurity");
+  const avgBar = document.getElementById("avgBar");
+  if (avgSecurityEl) {
+    let current = 0;
+    const avgInterval = setInterval(() => {
+      current += 2;
+      if (current >= avg) { current = avg; clearInterval(avgInterval); }
+      avgSecurityEl.textContent = `${current}%`;
+      if (avgBar) avgBar.style.width = `${current}%`;
+    }, 25);
+  }
+
+  // Segment details
+  const segmentDetails = document.getElementById("segmentDetails");
+  if (segmentDetails) {
+    const segments = [
+      { label: "Защищённые (>80%)", dot: "dot-green", services: services.filter((s) => s.securityLevel > 80) },
+      { label: "С рисками (50-80%)", dot: "dot-yellow", services: services.filter((s) => s.securityLevel >= 50 && s.securityLevel <= 80) },
+      { label: "Критичные (<50%)", dot: "dot-red", services: services.filter((s) => s.securityLevel < 50) }
+    ];
+
+    segmentDetails.innerHTML = "";
+    segments.forEach((seg) => {
+      const card = document.createElement("div");
+      card.className = "segment-detail-card";
+      let listHtml = "";
+      if (seg.services.length === 0) {
+        listHtml = `<p class="segment-empty">Нет сервисов</p>`;
+      } else {
+        listHtml = `<ul class="segment-detail-list">`;
+        seg.services.forEach((s) => {
+          listHtml += `<li><span class="svc-name">${escapeHtml(s.title)}</span><span class="svc-pct">${s.securityLevel}%</span></li>`;
+        });
+        listHtml += `</ul>`;
+      }
+      card.innerHTML = `<h3><span class="dot ${seg.dot}"></span>${seg.label}</h3>${listHtml}`;
+      segmentDetails.appendChild(card);
+    });
+  }
+
+  // Categories — detailed cards with mini bars
+  const categoryCards = document.getElementById("categoryCards");
   const categoryEmpty = document.getElementById("categoryEmpty");
-  const securityList = document.getElementById("securityList");
-  const securityEmpty = document.getElementById("securityEmpty");
-
-  if (!categoryStats || !categoryEmpty || !securityList || !securityEmpty) return;
+  if (!categoryCards || !categoryEmpty) return;
 
   const byCategory = services.reduce((acc, item) => {
-    acc[item.category] = (acc[item.category] || 0) + 1;
+    if (!acc[item.category]) {
+      acc[item.category] = { total: 0, safe: 0, risky: 0, critical: 0 };
+    }
+    acc[item.category].total++;
+    const lvl = Number(item.securityLevel);
+    if (lvl > 80) acc[item.category].safe++;
+    else if (lvl >= 50) acc[item.category].risky++;
+    else acc[item.category].critical++;
     return acc;
   }, {});
 
-  categoryStats.innerHTML = "";
-  const categoryEntries = Object.entries(byCategory).sort((a, b) => b[1] - a[1]);
+  categoryCards.innerHTML = "";
+  const categoryEntries = Object.entries(byCategory).sort((a, b) => b[1].total - a[1].total);
   if (!categoryEntries.length) {
     categoryEmpty.style.display = "block";
   } else {
     categoryEmpty.style.display = "none";
-    categoryEntries.forEach(([name, count]) => {
-      const row = document.createElement("div");
-      row.className = "kv-row";
-      row.innerHTML = `<span>${escapeHtml(name)}</span><strong>${count}</strong>`;
-      categoryStats.appendChild(row);
+    categoryEntries.forEach(([name, data]) => {
+      const card = document.createElement("div");
+      card.className = "cat-card";
+      const total = data.total;
+      const safePct = total ? (data.safe / total) * 100 : 0;
+      const riskyPct = total ? (data.risky / total) * 100 : 0;
+      const critPct = total ? (data.critical / total) * 100 : 0;
+
+      card.innerHTML = `
+        <div class="cat-card-header">
+          <span class="cat-card-title">${escapeHtml(name)}</span>
+          <span class="cat-card-count">${total} серв.</span>
+        </div>
+        <div class="cat-card-bar">
+          <div class="bar-seg seg-green" style="width: ${safePct}%"></div>
+          <div class="bar-seg seg-yellow" style="width: ${riskyPct}%"></div>
+          <div class="bar-seg seg-red" style="width: ${critPct}%"></div>
+        </div>
+        <div class="cat-card-legend">
+          ${data.safe ? `<span><span class="dot dot-green"></span>${data.safe}</span>` : ""}
+          ${data.risky ? `<span><span class="dot dot-yellow"></span>${data.risky}</span>` : ""}
+          ${data.critical ? `<span><span class="dot dot-red"></span>${data.critical}</span>` : ""}
+        </div>
+      `;
+      categoryCards.appendChild(card);
     });
   }
 
+  // Risky services — alert cards
+  const securityList = document.getElementById("securityList");
+  const securityEmpty = document.getElementById("securityEmpty");
+  if (!securityList || !securityEmpty) return;
+
   securityList.innerHTML = "";
-  const risky = services
+  const riskyServices = services
     .filter((item) => {
       const lvl = getSecurityLevel(Number(item.securityLevel));
       return lvl === "Низкий" || lvl === "Критический";
     })
-    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    .sort((a, b) => a.securityLevel - b.securityLevel);
 
-  if (!risky.length) {
+  if (!riskyServices.length) {
     securityEmpty.style.display = "block";
   } else {
     securityEmpty.style.display = "none";
-    risky.forEach((service) => {
+    riskyServices.forEach((service) => {
+      const level = getSecurityLevel(Number(service.securityLevel));
+      const isCritical = level === "Критический";
       const div = document.createElement("div");
-      div.className = "summary-service-item";
+      div.className = `alert-card level-${isCritical ? "critical" : "low"}`;
       div.innerHTML = `
-        <h3>${escapeHtml(service.title)}</h3>
-        <p class="meta">URL: ${escapeHtml(service.url)} | Категория: ${escapeHtml(service.category)} | Уровень: ${service.securityLevel}% | Последняя проверка: ${escapeHtml(service.lastCheckDate || "не указана")}</p>
-        <div class="badges">
-          <span class="status-badge" data-value="${escapeHtml(service.status)}">${escapeHtml(service.status)}</span>
+        <span class="alert-icon">${isCritical ? "🔴" : "🟠"}</span>
+        <div class="alert-info">
+          <p class="alert-name">${escapeHtml(service.title)}</p>
+          <p class="alert-meta">${escapeHtml(service.url)} · ${escapeHtml(service.category)}</p>
         </div>
+        <span class="alert-pct">${service.securityLevel}%</span>
+        <span class="alert-badge">
+          <span class="status-badge" data-value="${escapeHtml(service.status)}">${escapeHtml(service.status)}</span>
+        </span>
       `;
       securityList.appendChild(div);
     });

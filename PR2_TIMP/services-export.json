@@ -1,0 +1,67 @@
+[
+  {
+    "id": "demo-1",
+    "title": "Госуслуги",
+    "url": "gosuslugi.ru",
+    "category": "Госуслуги",
+    "securityLevel": 85,
+    "status": "Защищён",
+    "assignee": "",
+    "lastCheckDate": "2026-04-14",
+    "description": "",
+    "createdAt": "2026-04-15T12:00:00.000Z",
+    "updatedAt": "2026-04-15T12:00:00.000Z"
+  },
+  {
+    "id": "demo-2",
+    "title": "СберБанк Онлайн",
+    "url": "sberbank.ru",
+    "category": "Онлайн-банкинг",
+    "securityLevel": 78,
+    "status": "Есть риски",
+    "assignee": "",
+    "lastCheckDate": "2026-04-14",
+    "description": "",
+    "createdAt": "2026-04-15T12:00:00.000Z",
+    "updatedAt": "2026-04-15T12:00:00.000Z"
+  },
+  {
+    "id": "demo-3",
+    "title": "Яндекс Диск",
+    "url": "disk.yandex.ru",
+    "category": "Облачные хранилища",
+    "securityLevel": 62,
+    "status": "Есть риски",
+    "assignee": "",
+    "lastCheckDate": "2026-04-13",
+    "description": "",
+    "createdAt": "2026-04-15T12:00:00.000Z",
+    "updatedAt": "2026-04-15T12:00:00.000Z"
+  },
+  {
+    "id": "demo-4",
+    "title": "Почта Mail.ru",
+    "url": "mail.ru",
+    "category": "Почтовые сервисы",
+    "securityLevel": 45,
+    "status": "Критично",
+    "assignee": "",
+    "lastCheckDate": "2026-04-12",
+    "description": "",
+    "createdAt": "2026-04-15T12:00:00.000Z",
+    "updatedAt": "2026-04-15T12:00:00.000Z"
+  },
+  {
+    "id": "demo-5",
+    "title": "Т-Банк",
+    "url": "tbank.ru",
+    "category": "Онлайн-банкинг",
+    "securityLevel": 91,
+    "status": "Защищён",
+    "assignee": "",
+    "lastCheckDate": "2026-04-14",
+    "description": "",
+    "createdAt": "2026-04-15T12:00:00.000Z",
+    "updatedAt": "2026-04-15T12:00:00.000Z"
+  }
+]

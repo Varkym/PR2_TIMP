@@ -12,71 +12,62 @@
       <p class="subtitle">Обзор электронных сервисов</p>
     </header>
 
-    <main class="container grid">
-      <!-- Круговые индикаторы -->
-      <section class="card">
-        <h2>Общая статистика</h2>
-        <div class="stats-circle-row">
-          <div class="stat-circle">
-            <svg viewBox="0 0 36 36">
-              <circle class="bg-circle" cx="18" cy="18" r="14" />
-              <circle class="value-circle" cx="18" cy="18" r="14"
-                stroke="var(--btn-start)" stroke-dasharray="88" stroke-dashoffset="88" id="totalCircle" />
-            </svg>
-            <span class="stat-value" id="totalCount">0</span>
-            <span class="stat-label">Всего сервисов</span>
+    <main class="container">
+      <!-- Stacked bar -->
+      <section class="card summary-hero">
+        <h2 class="visually-hidden">Общая статистика</h2>
+        <div class="stacked-bar-wrap">
+          <div class="stacked-bar" id="stackedBar">
+            <div class="stacked-segment seg-green" id="segGreen"></div>
+            <div class="stacked-segment seg-yellow" id="segYellow"></div>
+            <div class="stacked-segment seg-red" id="segRed"></div>
           </div>
-          <div class="stat-circle">
-            <svg viewBox="0 0 36 36">
-              <circle class="bg-circle" cx="18" cy="18" r="14" />
-              <circle class="value-circle" cx="18" cy="18" r="14"
-                stroke="var(--badge-green-end)" stroke-dasharray="88" stroke-dashoffset="88" id="protectedCircle" />
-            </svg>
-            <span class="stat-value" id="protectedCount">0</span>
-            <span class="stat-label">Защищённых</span>
-          </div>
-          <div class="stat-circle">
-            <svg viewBox="0 0 36 36">
-              <circle class="bg-circle" cx="18" cy="18" r="14" />
-              <circle class="value-circle" cx="18" cy="18" r="14"
-                stroke="var(--badge-yellow-end)" stroke-dasharray="88" stroke-dashoffset="88" id="riskyCircle" />
-            </svg>
-            <span class="stat-value" id="riskyCount">0</span>
-            <span class="stat-label">С рисками</span>
-          </div>
-          <div class="stat-circle">
-            <svg viewBox="0 0 36 36">
-              <circle class="bg-circle" cx="18" cy="18" r="14" />
-              <circle class="value-circle" cx="18" cy="18" r="14"
-                stroke="var(--badge-red-end)" stroke-dasharray="88" stroke-dashoffset="88" id="criticalCircle" />
-            </svg>
-            <span class="stat-value" id="criticalCount">0</span>
-            <span class="stat-label">Критичных</span>
-          </div>
-        </div>
-
-        <div style="margin-top: 1.2rem;">
-          <div class="progress-row">
-            <span class="progress-label">Средний уровень</span>
-            <div class="progress-bar-bg">
-              <div class="progress-bar-fill" id="avgBar" style="width: 0%;"></div>
+          <div class="stacked-labels">
+            <div class="stacked-legend">
+              <span class="dot dot-green"></span>
+              <span>Защищённых</span>
+              <strong id="legProtected">0</strong>
             </div>
-            <span class="progress-value" id="avgSecurity">0%</span>
+            <div class="stacked-legend">
+              <span class="dot dot-yellow"></span>
+              <span>С рисками</span>
+              <strong id="legRisky">0</strong>
+            </div>
+            <div class="stacked-legend">
+              <span class="dot dot-red"></span>
+              <span>Критичных</span>
+              <strong id="legCritical">0</strong>
+            </div>
+            <div class="stacked-legend">
+              <span class="dot dot-rose"></span>
+              <span>Всего</span>
+              <strong id="legTotal">0</strong>
+            </div>
+          </div>
+          <div class="avg-line">
+            <span>Средний уровень:</span>
+            <strong id="avgSecurity">0%</strong>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill fill-rose" id="avgBar" style="width: 0%"></div>
+            </div>
           </div>
         </div>
       </section>
 
+      <!-- Детализация по сегментам -->
+      <div class="segment-details" id="segmentDetails"></div>
+
       <!-- Категории -->
-      <section class="card">
+      <section class="card mt-16">
         <h2>Распределение по категориям</h2>
-        <div id="categoryStats" class="kv-list"></div>
+        <div id="categoryCards" class="category-cards"></div>
         <p id="categoryEmpty" class="empty">Нет данных для анализа.</p>
       </section>
 
-      <!-- Сервисы с низким уровнем -->
-      <section class="card full">
+      <!-- Рисковые сервисы — карточки-алерты -->
+      <section class="card full mt-16">
         <h2>Сервисы с низким и критическим уровнем</h2>
-        <div id="securityList" class="service-list"></div>
+        <div id="securityList" class="alert-list"></div>
         <p id="securityEmpty" class="empty">Сервисов с низким и критическим уровнем нет.</p>
       </section>
     </main>

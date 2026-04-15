@@ -13,7 +13,7 @@
     </header>
 
     <main class="container">
-      <!-- Панель управления над таблицей -->
+      <!-- Панель управления -->
       <div class="table-toolbar">
         <a class="btn" href="create.html">Добавить сервис</a>
         <div class="toolbar-right">
@@ -48,29 +48,15 @@
         </div>
       </section>
 
-      <!-- Таблица -->
-      <section class="card table-card">
-        <div class="table-head">
-          <h2>Сервисы</h2>
-          <button id="clearAllBtn" class="btn btn-danger btn-sm" type="button">Удалить все</button>
-        </div>
-        <div class="table-wrap">
-          <table class="service-table">
-            <thead>
-              <tr>
-                <th>Название</th>
-                <th>URL</th>
-                <th>Категория</th>
-                <th>Уровень безопасности</th>
-                <th>Статус</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody id="serviceList"></tbody>
-          </table>
-        </div>
-        <p id="emptyState" class="empty">Сервисов пока нет. Добавь первый!</p>
-      </section>
+      <!-- Заголовок + очистка -->
+      <div class="section-head">
+        <h2>Сервисы</h2>
+        <button id="clearAllBtn" class="btn btn-danger btn-sm" type="button">Удалить все</button>
+      </div>
+
+      <!-- Flip-карточки -->
+      <div class="cards-grid" id="serviceList"></div>
+      <p id="emptyState" class="empty">Сервисов пока нет. Добавь первый!</p>
 
       <!-- Кнопка Сводка внизу -->
       <div class="bottom-nav">
@@ -79,6 +65,18 @@
     </main>
 
     <img class="robot-mascot" src="robot.png" alt="Робот-помощник" />
+
+    <!-- Модальное окно подтверждения -->
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal-box">
+        <h3 id="modalTitle">Подтверждение</h3>
+        <p id="modalMessage">Вы уверены?</p>
+        <div class="modal-actions">
+          <button class="btn" id="modalConfirmBtn">Да</button>
+          <button class="btn btn-secondary" id="modalCancelBtn">Отмена</button>
+        </div>
+      </div>
+    </div>
 
     <script src="app.js"></script>
   </body>
