@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Добавление сервиса</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="container header">
+      <h1 id="pageTitle">Добавление сервиса</h1>
+      <p id="pageSubtitle" class="subtitle">Новый электронный сервис</p>
+    </header>
+
+    <main class="container narrow">
+      <section class="card">
+        <h2 id="formTitle">Новый сервис</h2>
+        <form id="serviceForm" class="form">
+          <input type="hidden" id="serviceId" />
+
+          <label>
+            Название сервиса
+            <input id="title" name="title" maxlength="120" required placeholder="Госуслуги" />
+          </label>
+
+          <label>
+            URL сервиса
+            <input id="url" name="url" maxlength="200" required placeholder="gosuslugi.ru" />
+          </label>
+
+          <div class="row">
+            <label>
+              Категория
+              <select id="category" name="category" required>
+                <option value="Онлайн-банкинг">Онлайн-банкинг</option>
+                <option value="Платёжные системы">Платёжные системы</option>
+                <option value="Облачные хранилища">Облачные хранилища</option>
+                <option value="Почтовые сервисы">Почтовые сервисы</option>
+                <option value="Госуслуги">Госуслуги</option>
+                <option value="Социальные сети">Социальные сети</option>
+                <option value="Мессенджеры">Мессенджеры</option>
+              </select>
+            </label>
+
+            <label>
+              Уровень безопасности (%)
+              <input id="securityLevel" name="securityLevel" type="number" min="0" max="100" required placeholder="85" />
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Статус
+              <select id="status" name="status" required>
+                <option value="Защищён">Защищён</option>
+                <option value="Есть риски">Есть риски</option>
+                <option value="Критично">Критично</option>
+              </select>
+            </label>
+
+            <label>
+              Ответственный
+              <input id="assignee" name="assignee" maxlength="80" placeholder="ФИО / должность" />
+            </label>
+          </div>
+
+          <label>
+            Дата последней проверки
+            <input id="lastCheckDate" name="lastCheckDate" type="date" />
+          </label>
+
+          <label>
+            Описание
+            <textarea id="description" name="description" rows="5" maxlength="1000" placeholder="Примечания по безопасности..."></textarea>
+          </label>
+
+          <div class="actions">
+            <button class="btn" type="submit" id="saveBtn">Сохранить</button>
+            <button class="btn btn-secondary" type="button" id="resetBtn">Очистить</button>
+          </div>
+        </form>
+      </section>
+
+      <div class="bottom-nav">
+        <a class="btn btn-secondary" href="index.html">К списку сервисов</a>
+        <a class="btn btn-secondary" href="summary.html">Сводка</a>
+      </div>
+    </main>
+
+    <img class="robot-mascot" src="robot.png" alt="Робот-помощник" />
+
+    <script src="app.js"></script>
+  </body>
+</html>

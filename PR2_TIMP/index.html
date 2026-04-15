@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Безопасность электронных услуг</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="container header">
+      <h1>Безопасность электронных услуг</h1>
+      <p class="subtitle">Мониторинг и контроль сервисов</p>
+    </header>
+
+    <main class="container">
+      <!-- Панель управления над таблицей -->
+      <div class="table-toolbar">
+        <a class="btn" href="create.html">Добавить сервис</a>
+        <div class="toolbar-right">
+          <button id="exportBtn" class="btn btn-secondary" type="button">Экспорт JSON</button>
+          <label class="file-input btn btn-secondary">
+            Импорт JSON
+            <input id="importInput" type="file" accept="application/json" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Фильтры — две строки -->
+      <section class="card filters-card">
+        <div class="filters-row">
+          <input id="searchInput" type="search" placeholder="Поиск по названию, URL, описанию..." />
+        </div>
+        <div class="filters-row">
+          <select id="statusFilter">
+            <option value="Все">Все статусы</option>
+            <option value="Защищён">Защищён</option>
+            <option value="Есть риски">Есть риски</option>
+            <option value="Критично">Критично</option>
+          </select>
+          <select id="securityLevelFilter">
+            <option value="Все">Все уровни</option>
+            <option value="Высокий">Высокий (&gt;80%)</option>
+            <option value="Средний">Средний (50-80%)</option>
+            <option value="Низкий">Низкий (20-50%)</option>
+            <option value="Критический">Критический (&lt;20%)</option>
+          </select>
+          <button id="resetFiltersBtn" class="btn btn-secondary" type="button">Сбросить</button>
+        </div>
+      </section>
+
+      <!-- Таблица -->
+      <section class="card table-card">
+        <div class="table-head">
+          <h2>Сервисы</h2>
+          <button id="clearAllBtn" class="btn btn-danger btn-sm" type="button">Удалить все</button>
+        </div>
+        <div class="table-wrap">
+          <table class="service-table">
+            <thead>
+              <tr>
+                <th>Название</th>
+                <th>URL</th>
+                <th>Категория</th>
+                <th>Уровень безопасности</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="serviceList"></tbody>
+          </table>
+        </div>
+        <p id="emptyState" class="empty">Сервисов пока нет. Добавь первый!</p>
+      </section>
+
+      <!-- Кнопка Сводка внизу -->
+      <div class="bottom-nav">
+        <a class="btn btn-secondary" href="summary.html">Сводка</a>
+      </div>
+    </main>
+
+    <img class="robot-mascot" src="robot.png" alt="Робот-помощник" />
+
+    <script src="app.js"></script>
+  </body>
+</html>
